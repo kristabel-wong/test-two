@@ -1,6 +1,6 @@
-import { createReadStream } from "fs";
+const fs = require("fs");
 
-export const analysis = {
+const analysis = {
   stats: {
     uniqueIP: {},
     uniqueIPCount: 0,
@@ -8,23 +8,25 @@ export const analysis = {
   },
 
   loadFile: function (file) {
-    const readStream = createReadStream(file);
-    readStream.on("data", (chunk) => {
-      this.fileContents = chunk.toString().split(/\r?\n/);
-      this.fileContents.forEach((line) => {
-        // console.log(line);
-        this.processIPs(line);
-        this.processPathData(line);
-      });
-    });
+    return new Promise((resolve, reject) => {
+      const readStream = fs.createReadStream(file);
 
-    readStream.on("end", () => {
-      console.log("The number of unique IP addresses", analysis.getUniqueIPs());
-      console.log(
-        "The top 3 most visited URLs",
-        analysis.getMostVisitedURLs(3)
-      );
-      console.log("The top 3 most active IP addresses", analysis.getTopIPs(3));
+      readStream.on("data", (chunk) => {
+        this.fileContents = chunk.toString().split(/\r?\n/);
+        this.fileContents.forEach((line) => {
+          // console.log(line);
+          this.processIPs(line);
+          this.processPathData(line);
+        });
+      });
+
+      readStream.on("end", () => {
+        resolve();
+      });
+
+      readStream.on("error", (err) => {
+        reject(err); // Reject the Promise if there's an error
+      });
     });
   },
 
@@ -86,3 +88,5 @@ export const analysis = {
     return sortedURLs.slice(0, count);
   },
 };
+
+module.exports = analysis;
