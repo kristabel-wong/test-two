@@ -14,7 +14,6 @@ const analysis = {
       readStream.on("data", (chunk) => {
         this.fileContents = chunk.toString().split(/\r?\n/);
         this.fileContents.forEach((line) => {
-          // console.log(line);
           this.processIPs(line);
           this.processPathData(line);
         });
