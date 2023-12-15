@@ -27,3 +27,9 @@ npm install
 node index.js   # to run with default filename
 npm run test       # to run test suite
 ```
+
+### Next Steps
+
+- Make the stats in the analysis object read-only
+- Add more error handling
+- Unit Testing
