@@ -1,5 +1,5 @@
 const fileProcessor = require("./fileProcessor");
-const statsHandler = require("./statisticsHandler");
+const statsHandler = require("./statsProcessor");
 
 const analysis = {
   stats: {
@@ -10,27 +10,30 @@ const analysis = {
 
   async loadFile(file) {
     try {
-      const fileContents = await fileProcessor.readFile(file);
-      fileContents.forEach((line) => {
-        statsHandler.processIPs(this.stats, line);
-        statsHandler.processPathData(this.stats, line);
-      });
+      await fileProcessor.readFile(file, (line) => this.processChunks(line));
     } catch (err) {
       console.error("Error reading file:", err);
       throw err;
     }
   },
 
+  processChunks(line) {
+    statsHandler.processIPs(this.stats, line);
+    statsHandler.processPathData(this.stats, line);
+  },
+
   getUniqueIPs() {
-    return statsHandler.getUniqueIPs(this.stats);
+    return this.stats.uniqueIPCount;
   },
 
   getMostVisitedURLs(count) {
-    return statsHandler.getMostVisitedURLs(this.stats, count);
+    const sortedURLs = statsHandler.sortData(this.stats.urlFreq);
+    return sortedURLs.slice(0, count);
   },
 
   getTopIPs(count) {
-    return statsHandler.getTopIPs(this.stats, count);
+    const arrayOfEntries = statsHandler.sortData(this.stats.uniqueIP);
+    return arrayOfEntries.slice(0, count);
   },
 };
 

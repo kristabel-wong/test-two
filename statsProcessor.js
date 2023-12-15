@@ -35,29 +35,13 @@ function processPathData(stats, currentLine) {
   }
 }
 
-function getUniqueIPs(stats) {
-  return stats.uniqueIPCount;
-}
-
 function sortData(data) {
   const info = Object.entries(data);
   return info.sort((a, b) => b[1] - a[1]);
 }
 
-function getTopIPs(stats, count) {
-  const arrayOfEntries = sortData(stats.uniqueIP);
-  return arrayOfEntries.slice(0, count);
-}
-
-function getMostVisitedURLs(stats, count) {
-  const sortedURLs = sortData(stats.urlFreq);
-  return sortedURLs.slice(0, count);
-}
-
 module.exports = {
   processIPs,
   processPathData,
-  getUniqueIPs,
-  getTopIPs,
-  getMostVisitedURLs,
+  sortData,
 };
